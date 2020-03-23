@@ -1,4 +1,5 @@
-const uniqid = require('uniqid');
+import produce from "immer"
+import uniqid from "uniqid"
 
 const initialState = [{
     dateCreated: new Date(),
@@ -9,20 +10,19 @@ const initialState = [{
     id: uniqid()
 }];
 
-function TasksReducer(state = initialState, action) {
+export default (state = initialState, action) =>
+produce(state, draft => {
     switch (action.type) {
-        case "ADD":
-            return [
-                ...state,
-                action.payload
-            ];
-        case "EDIT":
-            return state.map(task => task.id === action.payload.id ? action.payload : task);
+        case 'ADD':
+            draft.push(action.payload);
+            break;
+        case 'EDIT':
+            const indexToEdit = draft.findIndex(task => task.id === action.payload.id);
+            draft[indexToEdit] = action.payload;
+            break;
         case "DELETE":
-            return state.filter(task => task.id !== action.payload);
-        default:
-            return state;
+            const indexToDelete = draft.findIndex(task => task.id === action.payload.id);
+            draft.splice(indexToDelete, 1);
+            break;
     }
-}
-
-export default TasksReducer;
+})

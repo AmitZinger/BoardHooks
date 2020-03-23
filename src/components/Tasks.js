@@ -4,7 +4,9 @@ import { Grid, Button, Select, MenuItem, InputLabel, FormControl } from '@materi
 import { makeStyles } from '@material-ui/core/styles';
 import Statuses from '../consts/Statuses'
 import Task from './Task'
-import AddTask from './AddTask'
+import AddEditTask from './AddEditTask'
+import ExcelExport from './ExcelExport'
+import uniqid from 'uniqid'
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -13,7 +15,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const App = () => {
+const Tasks = () => {
   const classes = useStyles();
   const tasks = useSelector(state => state.tasks)
   const [selectedStatus, setSelectedStatus] = useState(0)
@@ -40,6 +42,7 @@ const App = () => {
         <Button size="large" variant="contained" color="primary" onClick={handleClickOpen} style={{ marginRight: 20 }}>
           add task
         </Button>
+        <ExcelExport tasks={tasksShown} />
         <FormControl variant="outlined" className={classes.formControl}>
           <InputLabel>status</InputLabel>
           <Select
@@ -51,7 +54,7 @@ const App = () => {
             {
               Object.entries(Statuses).map(([key, value]) => {
                 return (
-                  <MenuItem value={Number(key)}>{value}</MenuItem>
+                  <MenuItem key={uniqid()} value={Number(key)}>{value}</MenuItem>
                 )
               })
             }
@@ -66,7 +69,7 @@ const App = () => {
         {
           tasksShown.map(task => {
             return (
-              <Grid item xs={4}>
+              <Grid key={uniqid()} item xs={4}>
                 <Task
                   task={task}
                 />
@@ -75,9 +78,9 @@ const App = () => {
           })
         }
       </Grid>
-      <AddTask open={open} handleClose={handleClose} />
+      <AddEditTask open={open} handleClose={handleClose} mode="add" />
     </div>
   );
 }
 
-export default App;
+export default Tasks;
